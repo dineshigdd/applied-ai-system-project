@@ -8,7 +8,7 @@ This project is a music recommendation system that uses a Retrieval-Augmented Ge
 This matters because traditional search is limited by exact keywords, but human emotion and music are more complex than that. By moving from a math-based scoring system to an AI-driven RAG pipeline, I’ve created a tool that can handle "edge cases"—like finding a match for an unknown genre or a conflicting mood—that a regular algorithm would fail to process. It bridges the gap between structured database data and the messy, creative way humans actually describe the music they want to hear
 
 ## Architecture Overview
-![System Diagram](assets/sys-diagram.PNG)  
+![System Diagram](assets/sys-diagram.png)  
 
 1. The Input (The "User Intent")
 What it represents: This is your PROFILES list in main.py.
@@ -161,4 +161,4 @@ Tested conflicting signals where energy and mood point at completely different s
 [**Model Card**](model_card.md)
 
 ##Video Walkthrough
-[![Video Walkthrough](path/to/your/image.png)](https://www.loom.com/share/cf1d8eae22e943d883aae4ed3f05db10)
+[![Video Walkthrough](https://www.loom.com/share/cf1d8eae22e943d883aae4ed3f05db10)]
