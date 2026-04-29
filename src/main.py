@@ -1,17 +1,11 @@
-"""
-Command line runner for the Music Recommender Simulation.
-
-This file helps you quickly run and test your recommender.
-
-You will implement the functions in recommender.py:
-- load_songs
-- score_song
-- recommend_songs
-"""
-
+import os
+from supabase import create_client
+from dotenv import load_dotenv
+from sentence_transformers import SentenceTransformer
+# Import from your recommender.py
 from .recommender import load_songs, recommend_songs, compute_active_weight
 
-
+# --- THE PROFILES LIST MUST BE HERE ---
 PROFILES = [
     {
         "name": "Gym Session",
@@ -53,10 +47,7 @@ PROFILES = [
             "target_tempo": 150,
         },
     },
-    # --- ADVERSARIAL / EDGE CASE PROFILES ---
     {
-        # Conflicting signal: high energy usually pairs with intense/happy,
-        # but mood is sad. Tests whether energy can overpower mood mismatch.
         "name": "[EDGE] High Energy + Sad Mood",
         "prefs": {
             "genre": "blues",
@@ -67,9 +58,6 @@ PROFILES = [
         },
     },
     {
-        # Genre that does not exist in the catalog at all.
-        # Every song takes the -0.5 mismatch penalty.
-        # Tests: does the system still rank meaningfully using mood/energy alone?
         "name": "[EDGE] Unknown Genre",
         "prefs": {
             "genre": "k-pop",
@@ -80,22 +68,16 @@ PROFILES = [
         },
     },
     {
-        # Energy 0.5 is the dead-centre of [0, 1].
-        # Gaussian from 0.5 gives every song a partial score — nothing stands out.
-        # Tests: do rankings collapse into a near-tie where binary features decide?
         "name": "[EDGE] Ambiguous Energy (0.5)",
         "prefs": {
             "genre": "jazz",
             "mood": "relaxed",
             "energy": 0.50,
-            "likes_acoustic": None,   # no acousticness preference at all
-            "target_tempo": None,     # no tempo preference at all
+            "likes_acoustic": None,
+            "target_tempo": None,
         },
     },
     {
-        # Contradictory texture: wants acoustic sound but very high energy.
-        # Acoustic songs in the catalog cluster at low energy (0.28–0.37).
-        # Tests: can any single song satisfy both without scoring low overall?
         "name": "[EDGE] Acoustic + High Energy",
         "prefs": {
             "genre": "folk",
@@ -107,35 +89,69 @@ PROFILES = [
     },
 ]
 
-
-def print_recommendations(profile_name: str, user_prefs: dict, songs: list, k: int = 5) -> None:
-    recommendations = recommend_songs(user_prefs, songs, k=k)
+def print_recommendations(profile_name: str, user_prefs: dict, songs: list, k: int = 3, supabase=None, model=None) -> None:
+    # Use the RAG-enabled recommend_songs
+    recommendations = recommend_songs(user_prefs, songs, k=k, supabase=supabase, model=model)
 
     print()
-    print("=" * 55)
-    print(f"  PROFILE : {profile_name}")
-    print(f"  Genre: {user_prefs['genre']}  |  Mood: {user_prefs['mood']}  |  Energy: {user_prefs['energy']}  |  Tempo: {user_prefs.get('target_tempo', '—')} BPM")
-    print("=" * 55)
+    print("=" * 60)
+    print(f" 🚀 PROFILE : {profile_name.upper()}")
+    # We keep the user's requested energy here so the intent is clear
+    print(f"    Target: {user_prefs.get('genre')} | {user_prefs.get('mood')} | Energy: {user_prefs.get('energy')}")
+    print("=" * 60)
 
+    # In RAG mode, compute_active_weight returns 1.0
     active_weight = compute_active_weight(user_prefs)
+    
     for rank, (song, score, explanation) in enumerate(recommendations, start=1):
-        print(f"\n  #{rank}  {song['title']}  —  {song['artist']}")
+        # Use .get() for title and artist to prevent KeyErrors
+        title = song.get('title', 'Unknown Title')
+        artist = song.get('artist', 'Unknown Artist')
+        
+        print(f"\n  #{rank}  {title} — {artist}")
+        
+        # similarity (0-1) * 10 gives us a nice 0-10 score
         normalized = (score / active_weight) * 10
-        print(f"      Score : {normalized:.1f} / 10  (active features max: {active_weight:.1f})")
-        print(f"      Song  : {song['genre']}  |  {song['mood']}  |  energy {song['energy']}  |  {song['tempo_bpm']:.0f} BPM")
+        print(f"      Score : {normalized:.1f} / 10")
+        
+        # CLEANED UI: We only show Genre and Mood from the DB
+        db_genre = song.get('genre', 'N/A')
+        db_mood = song.get('mood', 'N/A')
+        print(f"      Tags  : {db_genre} | {db_mood} ")
+        
         print(f"      Why   :")
+        # Gemini usually returns a clean string; we split by ";" just in case
         for reason in explanation.split(";"):
-            print(f"        • {reason.strip()}")
+            if reason.strip():
+                print(f"        • {reason.strip()}")
 
-    print()
-    print("=" * 55)
+    print("\n" + "=" * 60)
 
 
 def main() -> None:
+    # Load Environment variables
+    load_dotenv()
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_MASTER_KEY")
+    
+    # Check if keys exist
+    if not url or not key:
+        print("Error: SUPABASE_URL or SUPABASE_MASTER_KEY missing from .env file.")
+        return
+
+    # 1. Setup Supabase and Model
+    print("Connecting to Supabase...")
+    supabase = create_client(url, key)
+    
+    print("Loading AI Model (Jina v5)... this may take a moment...")
+    model = SentenceTransformer('jinaai/jina-embeddings-v5-text-small-retrieval', trust_remote_code=True)
+    
+    # 2. Load songs (still useful for local reference if needed)
     songs = load_songs("data/songs.csv")
 
+    # 3. Run the loop
     for profile in PROFILES:
-        print_recommendations(profile["name"], profile["prefs"], songs, k=3)
+        print_recommendations(profile["name"], profile["prefs"], songs, k=3, supabase=supabase, model=model)
 
 
 if __name__ == "__main__":
