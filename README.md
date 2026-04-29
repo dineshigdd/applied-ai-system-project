@@ -65,7 +65,7 @@ Step 4: Sync Your Data
 Before you can get recommendations, you must turn your CSV songs into vectors and upload them to the cloud.
 
 ```bash
-python3 -m src.sync_music
+python -m src.sync_music
 ```
 (Wait for the "Sync Complete" message. This will process your 18 songs and store them in Supabase.)
 Step 5: Run the Recommender
@@ -73,7 +73,7 @@ Now you can run the main system to see the RAG pipeline in action. This will cyc
 
 
 ```bash
-python3 -m src.main
+python -m src.main
 ```
 
 #### Running unit test
