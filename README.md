@@ -159,3 +159,6 @@ Tested conflicting signals where energy and mood point at completely different s
 
 ## Reflection
 [**Model Card**](model_card.md)
+
+##Video Walkthrough
+[![Alt Text](path/to/your/image.png)](https://www.loom.com/share/cf1d8eae22e943d883aae4ed3f05db10)
