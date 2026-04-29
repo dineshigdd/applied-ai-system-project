@@ -24,13 +24,30 @@ except Exception as e:
     sys.exit(1)
 
 # Load Jina model
-print("Loading Jina embeddings model (this may take 5-15 minutes on first run)...")
+print("Loading embedding model (this may take 5-15 minutes on first run)...")
 sys.stdout.flush()
-try:
-    model = SentenceTransformer('jinaai/jina-embeddings-v5-text-small-retrieval', trust_remote_code=True)
-    print("✓ Model loaded successfully")
-except Exception as e:
-    print(f"ERROR: Failed to load model: {e}")
+
+models_to_try = [
+    ('jinaai/jina-embeddings-v5-text-small-retrieval', 'Jina v5'),
+    ('sentence-transformers/stsb-roberta-large', 'STSB RoBERTa Large (1024-dim)'),
+]
+
+model = None
+for model_name, label in models_to_try:
+    try:
+        print(f"  Attempting {label}...")
+        model = SentenceTransformer(model_name, trust_remote_code=True)
+        print(f"✓ {label} loaded successfully")
+        break
+    except OSError as e:
+        if "paging file" in str(e).lower() or "memory" in str(e).lower():
+            print(f"⚠ Insufficient memory for {label}. Trying next...")
+            continue
+        else:
+            raise
+
+if model is None:
+    print("ERROR: Could not load any embedding model. Check your system memory.")
     sys.exit(1)
 
 # Read CSV

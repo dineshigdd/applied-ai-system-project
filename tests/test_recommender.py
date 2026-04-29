@@ -19,7 +19,8 @@ class DummyQueryVector:
 
 class DummyModel:
     def encode(self, text):
-        return DummyQueryVector([0.1] * 8)
+        # Return 1024-dimensional vector to match Jina v5
+        return DummyQueryVector([0.1] * 1024)
 
 class DummyRpcResponse:
     def __init__(self, data):
