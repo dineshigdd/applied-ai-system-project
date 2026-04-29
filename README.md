@@ -162,4 +162,4 @@ Tested conflicting signals where energy and mood point at completely different s
 
 ##Video Walkthrough
 * [Watch the Video Walkthrough](https://www.loom.com/share/cf1d8eae22e943d883aae4ed3f05db10)
-* [Interactivity](https://www.loom.com/share/5624fe147a374f1b92e045f7c2204822)
+* [Interactivity](https://www.loom.com/share/bddd8a4a6f214e3eac50fd17b82b69c1)
