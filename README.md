@@ -12,15 +12,17 @@ This matters because traditional search is limited by exact keywords, but human 
 
 1. The Input (The "User Intent")
 What it represents: This is your PROFILES list in main.py.
-The Human Element: You (the developer) are the human in the bottom-left. You created Edge Case Profiles specifically to test if the AI is smart enough to handle difficult requests like "K-Pop" or "High Energy + Sad Mood."
+The Human Element: A Son Profile is entered to the system. I could be also an ddge Case Profiles specifically to test if the AI is smart enough to handle difficult requests like "K-Pop" or "High Energy + Sad Mood."
+
 2. The Process (The "RAG Pipeline")
-This is where the magic happens in your code:
-Retrieval (The Search): Your code takes the user's vibe, uses the Jina v5 model to turn it into a vector, and sends an RPC call to Supabase. This is "Retrieval" because you are pulling relevant facts from your database.
-Augmentation (The Context): You take the search results (Song Title, Artist, Mood) and combine them with the User's original request. You are "augmenting" the prompt so the AI has all the facts it needs.
+Based on the ebtered song profile, the Jina v5 model to turn it into a vector, and sends an RPC call to Supabase. This is "Retrieval" because relevant facts are pulled from the database.
+
+Augmentation (The Context): The search results (Song Title, Artist, Mood) are combined with the User's original request "augmenting" the prompt so the AI has all the facts it needs.
 Generation (The Reasoning): Gemini 1.5 Flash acts as the brain. It looks at the facts and generates that "Why" explanation.
+
 3. The Output & Human-in-the-loop (The "Validation")
-The CLI: This is your terminal output when you run python3 -m src.main.
-Human Evaluation: The person in the bottom-right is you during your demo. You are checking for Semantic Alignment (Does the song actually match the vibe?) and Conciseness (Is the Gemini explanation short and professional?).
+The CLI: This is your terminal output when you run python -m src.main.
+Human Evaluation: Cecking for Semantic Alignment (Does the song actually match the vibe?) and Conciseness (Is the Gemini explanation short and professional?).
 
 ### Setup Instructions
 Step 1: Environment & API Keys
