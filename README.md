@@ -8,7 +8,7 @@ This project is a music recommendation system that uses a Retrieval-Augmented Ge
 This matters because traditional search is limited by exact keywords, but human emotion and music are more complex than that. By moving from a math-based scoring system to an AI-driven RAG pipeline, I’ve created a tool that can handle "edge cases"—like finding a match for an unknown genre or a conflicting mood—that a regular algorithm would fail to process. It bridges the gap between structured database data and the messy, creative way humans actually describe the music they want to hear
 
 ## Architecture Overview
-![System Diagram](images/sys-diagram.PNG)  
+![System Diagram](assets/sys-diagram.PNG)  
 
 1. The Input (The "User Intent")
 What it represents: This is your PROFILES list in main.py.
@@ -93,17 +93,17 @@ pytest
 
 ### Sample Interactions
 - **Gym Profile**   
-![Gym profile](images/gym-profile.PNG)  
+![Gym profile](assets/gym-profile.PNG)  
 
 - **Late night study profile**    
-![Late night study](images/late-night-study.PNG)  
+![Late night study](assets/late-night-study.PNG)  
 
 - **Road Trip profile**    
-![Road Trip](images/road-trip.PNG)  
+![Road Trip](assets/road-trip.PNG)  
 
 
 - **Sunday Morning profile**  
- ![Sunday Morning](images/sunday-morning.PNG)  
+ ![Sunday Morning](assets/sunday-morning.PNG)  
 
 ### Design Decisions:
 #### Why I built it this way
@@ -124,21 +124,21 @@ Complexity of Setup: Moving to a Vector Database (Supabase) required more initia
 
 **Unknown Genre**    
 k-pop, happy, energy 0.75 — tests graceful degradation when genre doesn't exist in the catalog.  
-![Unknown Genre](images/edge-unknown-genre.PNG)  
+![Unknown Genre](assets/edge-unknown-genre.PNG)  
 
 **Other edge cases tested**
 - **Acoustic and high Energy**  
 Tested for contradictory preferences where no song in the catalog satisfies both.  
-![Acoustic High Energy](images/edge-acoustic-high-energy.PNG)  
+![Acoustic High Energy](assets/edge-acoustic-high-energy.PNG)  
 The current catalog contains no high-energy acoustic songs. 
 
 - **High energy and sad mood**  
 Tested conflicting signals where energy and mood point at completely different songs.  
-![High Energy Sad](images/edge-high-energy-sad-mood.PNG)  
+![High Energy Sad](assets/edge-high-energy-sad-mood.PNG)  
 
 
 - **Ambigious Energy**    
-![Ambigious Energy](images/edge-ambigious-energy.PNG)  
+![Ambigious Energy](assets/edge-ambigious-energy.PNG)  
 
 **- Contextual Reasoning:** Gemini 1.5 Flash proved to be excellent at "bridging the gap." Even though I didn't have a visible "Energy" column, the AI was able to read the user's energy preference and explain why a specific song's intensity was a good fit.
 
