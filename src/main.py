@@ -167,6 +167,7 @@ def load_embedding_model():
         ('sentence-transformers/stsb-roberta-large', 'STSB RoBERTa Large (1024-dim fallback)'),
     ]
     
+    errors = []
     for model_name, label in models:
         try:
             print(f"Loading AI Model ({label})... this may take a moment...")
@@ -174,13 +175,24 @@ def load_embedding_model():
             print(f"✓ Loaded {label} successfully")
             return model
         except OSError as e:
-            if "paging file" in str(e).lower() or "memory" in str(e).lower():
+            error_msg = str(e)
+            errors.append(f"{label}: {error_msg}")
+            if "paging file" in error_msg.lower() or "memory" in error_msg.lower():
                 print(f"⚠ Insufficient memory for {label}. Trying lighter alternative...")
                 continue
             else:
-                raise
+                print(f"⚠ Error loading {label}: {error_msg}")
+                continue
+        except Exception as e:
+            error_msg = str(e)
+            errors.append(f"{label}: {error_msg}")
+            print(f"⚠ Error loading {label}: {error_msg}")
+            continue
     
-    print("ERROR: Could not load any embedding model. Check your system memory.")
+    print("\nERROR: Could not load any embedding model.")
+    print("Errors encountered:")
+    for error in errors:
+        print(f"  - {error}")
     raise RuntimeError("Failed to load embedding model after trying all options.")
 
 
