@@ -70,6 +70,7 @@ Before you can get recommendations, you must turn your CSV songs into vectors an
 python -m src.sync_music
 ```
 (Wait for the "Sync Complete" message. This will process your 18 songs and store them in Supabase.)
+
 Step 5: Run the Recommender
 Now you can run the main system to see the RAG pipeline in action. This will cycle through your 8 test profiles (including those tricky Edge Cases).
 
